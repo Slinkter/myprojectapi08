@@ -13,9 +13,11 @@ const Weather = ({ data = [] }) => {
   };
 
   return (
-    <div className="App">
+    <div className="">
       <div className=" city-name">
-        <h2>{data?.name}</h2>, <span>{data?.sys?.country}</span>
+        <h2>
+          {data?.name} , <span>{data?.sys?.country}</span>
+        </h2>
       </div>
       <div className="date">
         <span>{getCurrentDate()}</span>

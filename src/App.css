@@ -31,19 +31,21 @@ body {
   padding: 2px 15px;
   font-size: 16px;
   outline: none;
-  background-color: white;
-  color: #555;
+  background-color: #ffffff;
+  color: #555555;
 }
+
 .search-engine button {
   border: none;
   border-radius: 8px;
-  background-color: #000;
+  background-color: #000000;
   color: #fff;
   font-size: 20px;
   outline: none;
   cursor: pointer;
   padding: 13px 15px;
 }
+
 .city-name {
   margin-bottom: 10px;
 }
@@ -66,8 +68,9 @@ body {
   font-weight: bold;
   text-align: center;
 }
+
 .description {
-  color: #000;
+  color: #000000;
   font-size: 22px;
   font-weight: 500;
   margin-top: 0px;
@@ -79,7 +82,7 @@ body {
   justify-content: space-evenly;
   align-items: center;
   margin-top: 20px;
-  padding: 0 20px;
+  padding: 0px 20px;
   font-size: 20px;
   font-weight: bold;
   text-align: center;

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Search from "./componentes/Search";
 import Weather from "./componentes/Weather";
 import "./App.css";
@@ -37,15 +37,13 @@ const App = () => {
   }, []);
 
   return (
-    <div>
+    <div className="App">
       <Search search={seach} setSeach={setSeach} handleSearch={handleSearch} />
       {loading ? (
         <h1 className="loading">Loading...</h1>
       ) : (
         <Weather data={data} />
       )}
-
-      <pre>{JSON.stringify(data, null, 2)}</pre>
     </div>
   );
 };
