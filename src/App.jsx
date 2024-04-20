@@ -4,7 +4,7 @@ import Weather from "./componentes/Weather";
 import "./App.css";
 
 const App = () => {
-  const [seach, setSeach] = useState("");
+  const [searchCity, setSearchCity] = useState("");
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState(null);
 
@@ -29,7 +29,7 @@ const App = () => {
   };
 
   const handleSearch = () => {
-    fetchData(seach);
+    fetchData(searchCity);
   };
 
   useEffect(() => {
@@ -38,7 +38,11 @@ const App = () => {
 
   return (
     <div className="App">
-      <Search search={seach} setSeach={setSeach} handleSearch={handleSearch} />
+      <Search
+        search={searchCity}
+        setSeach={setSearchCity}
+        handleSearch={handleSearch}
+      />
       {loading ? (
         <h1 className="loading">Loading...</h1>
       ) : (
