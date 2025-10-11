@@ -3,6 +3,13 @@ import PropTypes from "prop-types";
 /**
  * WeatherCard - Componente visual para mostrar la información del clima con un diseño minimalista.
  * Muestra la temperatura, condición, velocidad del viento, humedad, icono y hora local.
+ * 
+ * Principios SOLID aplicados:
+ * - SRP (Single Responsibility Principle): Este componente tiene la única responsabilidad de presentar los datos del clima
+ *   formateados de una manera visualmente atractiva. No se encarga de obtener los datos ni de la lógica de la aplicación.
+ * - OCP (Open/Closed Principle): El componente está cerrado a la modificación en cuanto a su estructura de presentación de datos.
+ *   Sin embargo, está abierto a la extensión, por ejemplo, su estructura es replicada por `WeatherCardSkeleton.jsx` para el estado de carga,
+ *   permitiendo que la UI de carga se adapte a los cambios de diseño de esta tarjeta sin modificar su código interno.
  * @param {object} props - Las props del componente.
  * @param {object} props.data - Objeto que contiene los datos meteorológicos formateados. Espera las propiedades: `{ name, tempC, condition, windKph, humidity, icon, localtime }`.
  */

@@ -3,6 +3,12 @@ import React from "react";
 /**
  * WeatherCardSkeleton - Componente de esqueleto (skeleton loader) que imita la estructura y el estilo minimalista del WeatherCard.
  * Proporciona una retroalimentación visual durante el estado de carga.
+ * 
+ * Principios SOLID aplicados:
+ * - OCP (Open/Closed Principle): Este componente extiende el contrato visual de `WeatherCard` (su estructura y estilo)
+ *   sin modificar el código fuente de `WeatherCard`. Permite que la aplicación muestre un estado de carga coherente
+ *   con el diseño final, siendo abierto a la extensión (para replicar el diseño de `WeatherCard`) pero cerrado a la modificación
+ *   de `WeatherCard` en sí.
  */
 const WeatherCardSkeleton = () => {
     return (

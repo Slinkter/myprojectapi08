@@ -3,10 +3,18 @@
  * @description Componente principal de la aplicación de pronóstico del tiempo.
  * Gestiona el estado de la ciudad de búsqueda, el estado de carga, los datos meteorológicos y los errores.
  * Realiza llamadas a la API de OpenWeatherMap a través de un servicio y transforma los datos para su visualización.
+ *
+ * Principios SOLID aplicados:
+ * - SRP (Single Responsibility Principle): Este componente se encarga principalmente de la orquestación de la aplicación,
+ *   la gestión del estado global (carga, datos, errores) y el renderizado condicional de los componentes principales.
+ *   No se ocupa directamente de la lógica de la API ni de la presentación detallada de los datos del clima.
+ * - DIP (Dependency Inversion Principle): Depende de la abstracción `fetchWeatherData` proporcionada por `weatherService.js`,
+ *   en lugar de depender de los detalles de implementación de la llamada a la API. Esto permite cambiar la implementación
+ *   del servicio meteorológico sin afectar a este componente de alto nivel.
  */
 
 import React, { useState, useEffect } from "react";
-import { fetchWeatherData } from "./services/weatherService";
+import { fetchWeatherData } from "./services/weatherService"; // DIP: Depende de la abstracción del servicio
 import Search from "./componentes/Search";
 import WeatherCard from "./componentes/WeatherCard";
 import WeatherCardSkeleton from "./componentes/WeatherCardSkeleton";
@@ -32,6 +40,7 @@ const App = () => {
         setWeatherData(null); // Limpiar datos anteriores
 
         try {
+            // SRP: La llamada a la API se delega a weatherService.js
             const data = await fetchWeatherData(params);
             // Transformar los datos de la API al formato esperado por WeatherCard
             const transformedData = {
@@ -41,19 +50,24 @@ const App = () => {
                 windKph: (data.wind.speed * 3.6).toFixed(1), // Convertir m/s a km/h y redondear
                 humidity: data.main.humidity,
                 icon: `https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`,
-                localtime: new Date(data.dt * 1000).toLocaleDateString("es-ES", {
-                    weekday: "long",
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                }),
+                localtime: new Date(data.dt * 1000).toLocaleDateString(
+                    "es-ES",
+                    {
+                        weekday: "long",
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                    }
+                ),
             };
             setWeatherData(transformedData);
         } catch (err) {
             console.error("Error in App.jsx fetchData:", err);
-            setError("Error al cargar los datos. Inténtelo de nuevo o verifique el nombre de la ciudad."); // Mensaje de error para el usuario
+            setError(
+                "Error al cargar los datos. Inténtelo de nuevo o verifique el nombre de la ciudad."
+            ); // Mensaje de error para el usuario
             setWeatherData(null); // Asegurarse de que no haya datos parciales
         } finally {
             setIsLoading(false); // Siempre finalizar la carga, ya sea éxito o error

@@ -2,6 +2,11 @@
  * @file weatherService.js
  * @description Servicio para interactuar con la API de OpenWeatherMap.
  * Contiene la lógica para obtener datos meteorológicos y registra información de depuración de las llamadas a la API.
+ * 
+ * Principios SOLID aplicados:
+ * - SRP (Single Responsibility Principle): Este módulo tiene la única responsabilidad de interactuar con la API de OpenWeatherMap.
+ *   Se encarga de construir la URL de la petición, realizar el `fetch`, manejar la respuesta cruda y lanzar errores específicos de la API.
+ *   No se ocupa de la presentación de los datos ni de la gestión del estado de la aplicación.
  */
 
 const API_KEY = import.meta.env.VITE_OPENWEATHER_API_KEY;

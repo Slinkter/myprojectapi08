@@ -1,6 +1,13 @@
 /**
  * @file Search.jsx
  * @description Componente de búsqueda para introducir el nombre de una ciudad y activar la búsqueda.
+ * 
+ * Principios SOLID aplicados:
+ * - SRP (Single Responsibility Principle): Este componente tiene la única responsabilidad de gestionar la interfaz de usuario
+ *   para la búsqueda de ciudades (input y botón). No se encarga de la lógica de la API ni de la visualización de los resultados del clima.
+ * - OCP (Open/Closed Principle): El componente está abierto a la extensión a través de sus props (`handleSearch`, `loading`),
+ *   permitiendo personalizar su comportamiento sin modificar su código fuente interno. Está cerrado a la modificación interna
+ *   siempre que su propósito principal (la UI de búsqueda) no cambie.
  */
 
 import PropTypes from "prop-types";
