@@ -1,27 +1,63 @@
-import React from "react";
+/**
+ * @file Search.jsx
+ * @description Componente de búsqueda para introducir el nombre de una ciudad y activar la búsqueda.
+ */
 
-const Search = ({ search, setSeach, handleSearch }) => {
+import PropTypes from "prop-types";
+
+/**
+ * Componente funcional Search.
+ * Permite al usuario introducir una ciudad y buscar su pronóstico del tiempo.
+ * @param {object} props - Las props del componente.
+ * @param {string} props.search - El valor actual del campo de búsqueda.
+ * @param {function} props.setSeach - Función para actualizar el valor del campo de búsqueda.
+ * @param {function} props.handleSearch - Función que se ejecuta al hacer clic en el botón de búsqueda.
+ * @param {boolean} props.loading - Indica si la aplicación está en estado de carga.
+ * @returns {JSX.Element} El componente Search.
+ */
+const Search = ({ search, setSeach, handleSearch, loading }) => {
     return (
-        <div className=" flex flex-col md:flex-row gap-2 mb-2">
+        <form
+            className="w-full flex flex-col md:flex-row gap-3 mb-4"
+            onSubmit={(e) => {
+                e.preventDefault();
+                handleSearch();
+            }}
+            aria-label="City search form"
+        >
+            <label htmlFor="city-search" className="sr-only">
+                Search city
+            </label>
+
             <input
-                id="price"
-                name="price"
+                id="city-search"
+                name="city-search"
                 type="text"
-                placeholder="city..."
-                className="block w-full rounded-lg  pl-5 pr-5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-lg py-2 md:py-0 sm:leading-6"
+                placeholder="Enter city..."
+                className="flex-1 block w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-base text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 transition-all shadow-sm"
                 value={search}
                 onChange={(e) => setSeach(e.target.value)}
+                aria-label="City name"
             />
 
             <button
                 onClick={handleSearch}
-                type="button"
-                className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                type="submit"
+                className="inline-flex items-center justify-center rounded-lg bg-gray-800 px-4 py-2 text-sm font-semibold text-white hover:bg-gray-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                disabled={loading}
+                aria-busy={loading}
             >
-                Search
+                {loading ? "Searching..." : "Search"}
             </button>
-        </div>
+        </form>
     );
 };
 
 export default Search;
+
+Search.propTypes = {
+    search: PropTypes.string.isRequired,
+    setSeach: PropTypes.func.isRequired,
+    handleSearch: PropTypes.func.isRequired,
+    loading: PropTypes.bool.isRequired,
+};
