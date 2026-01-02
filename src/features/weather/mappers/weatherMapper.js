@@ -14,7 +14,7 @@
  * @property {string} condition - Weather condition description.
  * @property {string} windKph - Wind speed in kilometers per hour.
  * @property {number} humidity - Humidity percentage.
- * @property {string} icon - URL for the weather icon.
+ * @property {string} iconCode - The raw icon code from the API (e.g., "01d").
  * @property {string} localtime - Local date and time.
  */
 export const toWeatherDomainModel = (apiData) => {
@@ -23,10 +23,11 @@ export const toWeatherDomainModel = (apiData) => {
   return {
     name: apiData.name,
     tempC: apiData.main.temp - 273.15,
+    feelsLikeC: apiData.main.feels_like - 273.15,
     condition: apiData.weather[0].description,
     windKph: (apiData.wind.speed * 3.6).toFixed(1),
     humidity: apiData.main.humidity,
-    icon: `https://openweathermap.org/img/wn/${apiData.weather[0].icon}@4x.png`,
+    iconCode: apiData.weather[0].icon,
     localtime: new Date(apiData.dt * 1000).toLocaleDateString("es-ES", {
       weekday: "long",
       year: "numeric",

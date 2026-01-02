@@ -20,18 +20,13 @@ export const fetchWeatherData = async (city) => {
   // To use the API key, create a .env file in the project root with the following format:
   // VITE_OPENWEATHER_API_KEY=YOUR_API_KEY_HERE
   // Make sure the .env file is in your .gitignore to avoid uploading it to version control.
-  try {
-    const url = `${BASE_URL}?q=${city}&appid=${API_KEY}`;
-    const response = await fetch(url);
+  const url = `${BASE_URL}?q=${city}&appid=${API_KEY}`;
+  const response = await fetch(url);
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || "Failed to fetch weather data");
-    }
-
-    return await response.json();
-  } catch (error) {
-    // Re-throw the error to be handled by the caller (e.g., the custom hook)
-    throw error;
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.message || "Failed to fetch weather data");
   }
+
+  return await response.json();
 };

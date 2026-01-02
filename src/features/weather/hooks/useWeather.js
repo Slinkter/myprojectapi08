@@ -17,10 +17,14 @@ import { toWeatherDomainModel } from "../mappers/weatherMapper";
  * An object containing the weather data, loading state, error state, and the function to fetch weather.
  */
 export const useWeather = () => {
+  // local state
   const [weatherData, setWeatherData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  // useCallback memoriza la función para mantener su referencia estable entre renderizados.
+  // Esto es crucial si fetchWeather se añade como dependencia en un useEffect
+  // en el componente que consuma este hook, evitando bucles infinitos.
   const fetchWeather = useCallback(async (city) => {
     if (!city || !city.trim()) {
       // Clear previous data if search is cleared

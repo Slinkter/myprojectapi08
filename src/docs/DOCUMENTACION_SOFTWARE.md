@@ -169,3 +169,4 @@ El hook `useWeather` encapsula toda la complejidad del estado del clima. Esto pe
 ## 7. Recursos Adicionales
 -   [Glosario de Términos](./GLOSARIO.md)
 -   [Tutorial Práctico de Desarrollo](./TUTORIAL_PRACTICO.md)
+-   [Registro de Cambios (Changelog)](./CHANGELOG.md)

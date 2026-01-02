@@ -3,6 +3,7 @@
  * @description A presentational component that displays weather information in a clean, minimalist card design.
  */
 import PropTypes from "prop-types";
+import WeatherIcon from "./WeatherIcon";
 
 /**
  * Renders a card with detailed weather information for a specific location.
@@ -14,18 +15,18 @@ import PropTypes from "prop-types";
  * @param {string} props.data.condition - A description of the weather condition.
  * @param {string|number} props.data.windKph - The wind speed in km/h.
  * @param {string|number} props.data.humidity - The humidity percentage.
- * @param {string} props.data.icon - The URL for the weather condition icon.
+ * @param {string} props.data.iconCode - The icon code for the weather condition.
  * @param {string} props.data.localtime - The local time and date string.
  * @returns {JSX.Element|null} The rendered weather card component or null if no data is provided.
  */
 const WeatherCard = ({ data }) => {
   if (!data) return null;
 
-  const { name, tempC, condition, windKph, humidity, icon, localtime } = data;
+  const { name, tempC, condition, windKph, humidity, iconCode, localtime } = data;
 
   return (
     <article
-      className="w-full bg-white rounded-3xl p-10 transition-all duration-300 hover:shadow-2xl hover:shadow-gray-200/50 border border-gray-100"
+      className="w-full bg-gray-100 rounded-3xl p-10 transition-all duration-300 hover:shadow-xl hover:shadow-gray-200/50 border border-gray-100"
       role="region"
       aria-label={`Weather forecast for ${name}`}
     >
@@ -40,13 +41,11 @@ const WeatherCard = ({ data }) => {
             </p>
           )}
         </div>
-        {icon && (
-          <div className="relative w-20 h-20 -mr-4 -mt-4">
-            <img
-              src={icon}
-              alt={condition || "Weather icon"}
-              className="w-full h-full object-contain opacity-90 drop-shadow-sm"
-              loading="lazy"
+        {iconCode && (
+          <div className="relative -mr-4 -mt-4 text-gray-800">
+            <WeatherIcon
+              iconCode={iconCode}
+              className="w-24 h-24 opacity-90 drop-shadow-sm"
             />
           </div>
         )}
@@ -58,6 +57,9 @@ const WeatherCard = ({ data }) => {
         </span>
         <span className="text-2xl text-gray-500 font-light capitalize mt-2 tracking-wide">
           {condition}
+        </span>
+        <span className="text-md text-gray-400 font-light mt-2">
+          Sensación Térmica: {Math.round(data.feelsLikeC)}°
         </span>
       </div>
 
@@ -88,10 +90,11 @@ WeatherCard.propTypes = {
   data: PropTypes.shape({
     name: PropTypes.string,
     tempC: PropTypes.number,
+    feelsLikeC: PropTypes.number,
     condition: PropTypes.string,
     windKph: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
     humidity: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-    icon: PropTypes.string,
+    iconCode: PropTypes.string,
     localtime: PropTypes.string,
   }).isRequired,
 };

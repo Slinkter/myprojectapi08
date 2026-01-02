@@ -33,7 +33,7 @@ const App = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-6 transition-colors duration-500">
+    <div className="min-h-screen flex flex-col items-center justify-center p-6 transition-colors duration-300">
       <main className="w-full max-w-lg space-y-8 animate-fade-in">
         <header className="text-center space-y-2 mb-8">
           <h1 className="text-3xl font-light tracking-tight text-gray-900">
