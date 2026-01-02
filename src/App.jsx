@@ -4,26 +4,32 @@
  * Orchestrates the application using Feature-Based Architecture patterns.
  */
 
-import { useState } from "react";
+import { useEffect } from "react";
 import Search from "@/features/weather/components/Search";
 import WeatherCard from "@/features/weather/components/WeatherCard";
 import WeatherCardSkeleton from "@/features/weather/components/WeatherCardSkeleton";
 import { useWeather } from "@/features/weather/hooks/useWeather";
 
 /**
- * Main App Component
- * Integrates the Weather feature components and logic.
+ * Main App Component.
+ * Integrates the Weather feature components and orchestrates the initial data fetch.
  * @returns {JSX.Element} The rendered App component.
  */
 const App = () => {
   // Custom hook encapsulates all data fetching and state logic
   const { weatherData, isLoading, error, fetchWeather } = useWeather();
 
-  // Local state for the search input
-  const [searchCity, setSearchCity] = useState("");
+  // Fetch initial weather data for a default city on component mount
+  useEffect(() => {
+    fetchWeather("Lima");
+  }, [fetchWeather]);
 
-  const handleSearch = () => {
-    fetchWeather(searchCity);
+  /**
+   * Handles the search action triggered by the Search component.
+   * @param {string} city - The city to search for.
+   */
+  const handleSearch = (city) => {
+    fetchWeather(city);
   };
 
   return (
@@ -37,12 +43,7 @@ const App = () => {
         </header>
 
         <section>
-          <Search
-            search={searchCity}
-            setSeach={setSearchCity}
-            handleSearch={handleSearch}
-            loading={isLoading}
-          />
+          <Search onSearch={handleSearch} loading={isLoading} />
         </section>
 
         <section aria-live="polite" className="min-h-[300px]">

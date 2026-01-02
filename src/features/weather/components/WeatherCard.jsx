@@ -1,9 +1,23 @@
 /**
- * WeatherCard Component
- * Displays weather information with a clean, minimalist design.
+ * @file WeatherCard.jsx
+ * @description A presentational component that displays weather information in a clean, minimalist card design.
  */
 import PropTypes from "prop-types";
 
+/**
+ * Renders a card with detailed weather information for a specific location.
+ *
+ * @param {{data: object}} props - The props for the component.
+ * @param {object} props.data - The weather data object to display.
+ * @param {string} props.data.name - The name of the city.
+ * @param {number} props.data.tempC - The temperature in Celsius.
+ * @param {string} props.data.condition - A description of the weather condition.
+ * @param {string|number} props.data.windKph - The wind speed in km/h.
+ * @param {string|number} props.data.humidity - The humidity percentage.
+ * @param {string} props.data.icon - The URL for the weather condition icon.
+ * @param {string} props.data.localtime - The local time and date string.
+ * @returns {JSX.Element|null} The rendered weather card component or null if no data is provided.
+ */
 const WeatherCard = ({ data }) => {
   if (!data) return null;
 
