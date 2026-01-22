@@ -2,9 +2,9 @@ name: Weather Forecast CI
 
 on:
   push:
-    branches: ["main"]
+    branches: ["main", "gemini-*"]
   pull_request:
-    branches: ["main"]
+    branches: ["main", "gemini-*"]
 
 jobs:
   build:
