@@ -26,6 +26,8 @@ jobs:
           cache: "pnpm"
 
       - name: Install and Build 🏗️
+        env:
+          VITE_OPENWEATHER_API_KEY: ${{ secrets.VITE_OPENWEATHER_API_KEY }}
         run: |
           pnpm install --frozen-lockfile
           pnpm run build
