@@ -73,36 +73,57 @@ El desarrollo se gestiona bajo el marco SCRUM, adaptado para un equipo ágil de 
 El sistema sigue una variacion de **Clean Architecture** adaptada al frontend, denominada **Feature-Based Architecture**.
 
 ### 5.1. Diagrama de Contexto (C4 Nivel 1)
+
 ```mermaid
-graph TD
-    User[Usuario Final] -->|Consulta Clima| SPA[WeatherForecast SPA]
-    SPA -->|HTTPS/JSON| API[OpenWeatherMap API]
-    SPA -->|Assets| CDN[Vite/Netlify CDN]
+flowchart TD
+    %% Estilos
+    classDef person fill:#08427b,stroke:#052c52,stroke-width:2px,color:#ffffff;
+    classDef system fill:#1168bd,stroke:#0b4d8c,stroke-width:2px,color:#ffffff;
+    classDef external fill:#999999,stroke:#666666,stroke-width:2px,color:#ffffff;
+    
+    User((🤵 Usuario Final)):::person
+    SPA[💻 WeatherForecast SPA]:::system
+    API[☁️ OpenWeatherMap API]:::external
+    CDN[📦 CDN / Hosting]:::external
+
+    User -->|Consulta Clima| SPA
+    SPA -->|Solicita Datos| API
+    SPA -->|Carga Assets| CDN
+    API -.->|JSON response| SPA
 ```
 
-### 5.2. Diagrama de Contenedores (Feature-Based)
+### 5.2. Arquitectura de Contenedores (Feature-Based)
 ```mermaid
-graph TD
-    subgraph "App Core"
-        App[App.jsx Orquestador]
-        Config[Config Layer]
-        Layout[Layout Components]
+flowchart TD
+    %% Estilos
+    classDef core fill:#e1f5fe,stroke:#01579b,stroke-width:2px,color:#01579b;
+    classDef feature fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#e65100;
+    classDef shared fill:#f3e5f5,stroke:#4a148c,stroke-width:2px,color:#4a148c;
+
+    subgraph Core ["🛠️ ORCHESTRATOR & CONFIG"]
+        direction TB
+        App[App.jsx]:::core
+        Config[src/config]:::core
+        App --> Config
     end
 
-    subgraph "Feature: Weather"
-        Hook[useWeather Hook]
-        Service[Weather Service]
-        Mapper[Weather Mapper]
-        UI[Components: Card, Search]
+    subgraph Feature ["🌤️ FEATURE: WEATHER"]
+        direction TB
+        Hooks[["🪝 Custom Hooks<br>(useWeather, useForecast)"]]:::feature
+        Services["🔌 Services & Adapters<br>(fetchWeather, Mappers)"]:::feature
+        UI["🎨 UI Components<br>(ForecastDisplay, WeatherCard)"]:::feature
+        
+        Hooks --> Services
+        Hooks --> UI
     end
 
-    App --> Layout
-    App --> Hook
-    App --> Config
-    Hook --> Service
-    Service --> Config
-    Hook --> Mapper
-    Hook --> UI
+    subgraph Shared ["🧱 SHARED COMPONENTS"]
+        Layout["MainLayout & ErrorBoundary"]:::shared
+    end
+
+    App -->|Integra| Feature
+    App -->|Envuelve| Shared
+    Services -->|Usa| Config
 ```
 
 ---
@@ -110,27 +131,89 @@ graph TD
 ## 6. Diseño del Sistema
 
 ### 6.1. Diagrama de Flujo de Datos
+### 6.1. Flujo de Datos y Control (Data Flow)
 ```mermaid
-sequenceDiagram
-    participant User
-    participant Component as UI (Search)
-    participant Orchestrator as App
-    participant Hook as useWeather
-    participant Service as Service Layer
-    participant API as OpenWeather
+flowchart TD
+    %% Estilos Visuales "High Quality"
+    classDef userAction fill:#e3f2fd,stroke:#2196f3,stroke-width:2px,color:#0d47a1;
+    classDef component fill:#fff8e1,stroke:#ffc107,stroke-width:2px,color:#ff6f00;
+    classDef hook fill:#f3e5f5,stroke:#9c27b0,stroke-width:2px,color:#4a148c;
+    classDef service fill:#e8f5e9,stroke:#4caf50,stroke-width:2px,color:#1b5e20;
+    classDef api fill:#424242,stroke:#000000,stroke-width:2px,color:#ffffff;
 
-    User->>Component: Escribe "Madrid" y envía
-    Component->>Orchestrator: onSearch("Madrid")
-    Orchestrator->>Hook: fetchWeather("Madrid")
-    Hook->>Hook: setIsLoading(true)
-    Hook->>Service: fetchWeatherData("Madrid")
-    Service->>API: GET /weather?q=Madrid...
-    API-->>Service: JSON Response (Raw)
-    Service-->>Hook: Data Object
-    Hook->>Hook: Mapper.transform(Data)
-    Hook->>Hook: setWeatherData(MappedData)
-    Hook-->>Orchestrator: Update State
-    Orchestrator->>User: Render WeatherCard
+    User((👤 Usuario))
+    
+    subgraph View [" Capa de Vista (React UI) "]
+        direction TB
+        SearchBar[🔍 Search Component]:::component
+        AppOrchestrator[📱 App.jsx]:::component
+    end
+
+    subgraph Logic [" Capa de Lógica (Custom Hooks) "]
+        direction TB
+        useWeather[["🪝 useWeather()"]]:::hook
+    end
+
+    subgraph Data [" Capa de Datos (Services & Adapters) "]
+        direction TB
+        Service[⚙️ weatherService.js]:::service
+        Mapper[🔄 weatherMapper.js]:::service
+    end
+
+    External[☁️ OpenWeather API]:::api
+
+    %% FLujo
+    User -->|1. Escribe 'Madrid'| SearchBar
+    SearchBar -->|2. onSearch('Madrid')| AppOrchestrator
+    AppOrchestrator -->|3. Llama fetchWeather| useWeather
+    useWeather -->|4. setIsLoading(true)| useWeather
+    useWeather -->|5. Solicita Datos| Service
+    Service -->|6. GET Request| External
+    External -- "7. JSON Response" --> Service
+    Service -->|8. Raw Data| Mapper
+    Mapper -- "9. Domain Model (Limpio)" --> useWeather
+    useWeather -->|10. setWeatherData(Model)| useWeather
+    useWeather -- "11. Estado Actualizado" --> AppOrchestrator
+    AppOrchestrator -- "12. Renderiza" --> User
+```
+
+### 6.2. Ciclo de Vida y Ejecución (Lifecycle)
+Detalle del primer renderizado y la ejecución paralela de hooks.
+
+```mermaid
+flowchart TD
+    %% Estilos
+    classDef phase fill:#eceff1,stroke:#546e7a,stroke-width:1px,stroke-dasharray: 5 5;
+    classDef react fill:#61dafb,stroke:#0277bd,stroke-width:2px,color:#01579b;
+    classDef js fill:#f7df1e,stroke:#f57f17,stroke-width:2px,color:#000000;
+    classDef wait fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#b71c1c;
+
+    Start((🟢 MOUNT)) --> AppInit[App.jsx Se Monta]:::react
+
+    subgraph HooksInit [" 1. Inicialización de Hooks "]
+        AppInit --> InitW[Inicia useWeather]:::js
+        AppInit --> InitF[Inicia useForecast]:::js
+        InitW --> StateW[Estado: { data: null, loading: false }]:::phase
+        InitF --> StateF[Estado: { data: null, loading: false }]:::phase
+    end
+
+    subgraph EffectPhase [" 2. React.useEffect (Side Effect) "]
+        StateW & StateF --> Effect[⚡ useEffect ejecuta handleSearch('Lima')]:::react
+    end
+
+    subgraph FetchPhase [" 3. Fetching Paralelo "]
+        Effect --> W_Load[Set Loading: TRUE]:::wait
+        Effect --> F_Load[Set Loading: TRUE]:::wait
+        
+        W_Load --> W_API[API Call: /weather]:::js
+        F_Load --> F_API[API Call: /forecast]:::js
+    end
+
+    subgraph RenderPhase [" 4. Renderizado & Actualización "]
+        W_API & F_API --> Resolve[Promesas Resueltas]:::react
+        Resolve --> Update[Set States con Datos Mapeados]:::react
+        Update --> FinalRender[🎨 Re-Render App con Datos]:::react
+    end
 ```
 
 ---

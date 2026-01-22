@@ -22,7 +22,7 @@ import { WEATHER_CONSTANTS } from "../constants";
 export const toForecastDomainModel = (apiData) => {
   if (!apiData || !apiData.list) return null;
 
-  const { UNITS, DATE_FORMAT } = WEATHER_CONSTANTS;
+  const { UNITS } = WEATHER_CONSTANTS;
   const dailyGroups = {};
 
   // 1. Group by Date
