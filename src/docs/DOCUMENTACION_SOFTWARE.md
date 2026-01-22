@@ -241,9 +241,9 @@ flowchart TD
 
 ## 8. Decisiones Técnicas (ADR)
 
-*   **ADR-001: Tailwind CSS Puro**: Se decide **NO** usar bibliotecas de componentes (MUI, Chakra) para garantizar cero *overhead* en el bundle y control total del diseño.
-*   **ADR-002: Fetch Nativo**: Se decide usar `fetch` en lugar de `axios` porque los requerimientos de red son simples y no justifican 20kb extra de dependencia.
-*   **ADR-003: Feature Folders**: Se organiza el código por *features* (`/features/weather`) y no por tipo técnico, para facilitar que el equipo escale y trabaje en módulos aislados.
+* **ADR-001: Tailwind CSS Puro**: Se decide **NO** usar bibliotecas de componentes (MUI, Chakra) para garantizar cero *overhead* en el bundle y control total del diseño.
+* **ADR-002: Fetch Nativo**: Se decide usar `fetch` en lugar de `axios` porque los requerimientos de red son simples y no justifican 20kb extra de dependencia.
+* **ADR-003: Feature Folders**: Se organiza el código por *features* (`/features/weather`) y no por tipo técnico, para facilitar que el equipo escale y trabaje en módulos aislados.
 
 ---
 
@@ -274,9 +274,9 @@ La inversión en refactorización ha reducido la deuda técnica visual y lógica
 
 ## 11. Roadmap Evolutivo
 
-*   **Q3 2026**: Integración de Geolocalización automática del navegador.
-*   **Q4 2026**: Modo Oscuro/Claro con persistencia en LocalStorage.
-*   **Q1 2027**: Conversión a PWA (Progressive Web App) para funcionamiento offline básico.
+* **Q3 2026**: Integración de Geolocalización automática del navegador.
+* **Q4 2026**: Modo Oscuro/Claro con persistencia en LocalStorage.
+* **Q1 2027**: Conversión a PWA (Progressive Web App) para funcionamiento offline básico.
 
 ---
 
