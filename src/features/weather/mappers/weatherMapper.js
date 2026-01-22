@@ -1,40 +1,48 @@
 /**
- * @file weatherMapper.js
- * @description Maps raw API data to the application's domain model for weather.
- * This ensures a consistent data structure throughout the app and decouples it from the API's contract.
- */
-
-/**
- * Transforms the raw weather data from the OpenWeatherMap API into a structured domain model.
+ * Mapeador de Dominio de Clima (Weather Mapper).
  *
- * @param {object} apiData - The raw data object received from the API.
- * @returns {object} A structured weather data object for use in the application.
- * @property {string} name - City name.
- * @property {number} tempC - Temperature in Celsius.
- * @property {string} condition - Weather condition description.
- * @property {string} windKph - Wind speed in kilometers per hour.
- * @property {number} humidity - Humidity percentage.
- * @property {string} iconCode - The raw icon code from the API (e.g., "01d").
- * @property {string} localtime - Local date and time.
+ * **Funcionalidad:**
+ * - Transforma los datos "crudos" de la API de OpenWeatherMap al modelo de dominio de la aplicación.
+ * - Aplica conversiones de unidades (Kelvin -> Celsius, m/s -> km/h).
+ * - Formatea fechas y descripciones.
+ *
+ * **Flujo de interacción:**
+ * 1. Recibe `apiData` (JSON crudo).
+ * 2. Valida la existencia de datos.
+ * 3. Aplica fórmulas matemáticas usando constantes centralizadas.
+ * 4. Retorna el objeto `WeatherDomainModel`.
+ *
+ * **Estado y efectos secundarios:**
+ * - Función pura (Pure Function): Misma entrada siempre produce misma salida, sin efectos secundarios.
+ *
+ * **Motivo de existencia:**
+ * - Patrón Adaptador: Desacopla la vista de la estructura específica de la API externa.
+ * - Centraliza la lógica de transformación de datos.
+ *
+ * @param {object} apiData - Objeto de respuesta raw de la API.
+ * @returns {object|null} Objeto de dominio limpio o null si no hay datos.
  */
+import { config } from "@/config/env";
+import { WEATHER_CONSTANTS } from "../constants";
+
 export const toWeatherDomainModel = (apiData) => {
   if (!apiData) return null;
 
+  const { UNITS, DATE_FORMAT } = WEATHER_CONSTANTS;
+
   return {
     name: apiData.name,
-    tempC: apiData.main.temp - 273.15,
-    feelsLikeC: apiData.main.feels_like - 273.15,
+    // Conversión explícita usando constantes
+    tempC: apiData.main.temp - UNITS.KELVIN_OFFSET,
+    feelsLikeC: apiData.main.feels_like - UNITS.KELVIN_OFFSET,
     condition: apiData.weather[0].description,
-    windKph: (apiData.wind.speed * 3.6).toFixed(1),
+    windKph: (apiData.wind.speed * UNITS.WIND_CONVERSION_FACTOR).toFixed(1),
     humidity: apiData.main.humidity,
     iconCode: apiData.weather[0].icon,
-    localtime: new Date(apiData.dt * 1000).toLocaleDateString("es-ES", {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    }),
+    // Formateo de fecha usando configuración local
+    localtime: new Date(apiData.dt * 1000).toLocaleDateString(
+      config.app.language,
+      DATE_FORMAT,
+    ),
   };
 };

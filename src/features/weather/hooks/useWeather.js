@@ -9,12 +9,33 @@ import { fetchWeatherData } from "../services/weatherService";
 import { toWeatherDomainModel } from "../mappers/weatherMapper";
 
 /**
- * Custom hook to fetch and manage weather data.
- * It encapsulates the logic for fetching data, managing loading and error states,
- * and transforming the data into the application's domain model.
+ * Hook Personalizado: Gestión del Clima (useWeather).
  *
- * @returns {{weatherData: object|null, isLoading: boolean, error: string|null, fetchWeather: function(string): Promise<void>}}
- * An object containing the weather data, loading state, error state, and the function to fetch weather.
+ * **Funcionalidad:**
+ * - Encapsula la lógica de estado y gestión de efectos para la feature "Weather".
+ * - Coordina la llamada al servicio y la transformación de datos.
+ *
+ * **Flujo de interacción:**
+ * 1. Expone el método `fetchWeather(city)`.
+ * 2. Al invocarse, setea `isLoading` a true y limpia errores.
+ * 3. Llama al servicio `fetchWeatherData`.
+ * 4. Transforma la respuesta con `toWeatherDomainModel`.
+ * 5. Actualiza el estado local con los datos listos para la UI.
+ *
+ * **Estado y efectos secundarios:**
+ * - Maneja estados locales: `weatherData`, `isLoading`, `error`.
+ * - Sin efectos secundarios automáticos (el consumidor decide cuándo llamar a fetch).
+ *
+ * **Motivo de existencia:**
+ * - Separation of Concerns: Desacopla la vista (`App.jsx`) de la lógica de negocio.
+ * - Reusabilidad: Permite usar la lógica del clima en múltiples componentes si fuera necesario.
+ *
+ * @returns {{
+ *   weatherData: object|null,
+ *   isLoading: boolean,
+ *   error: string|null,
+ *   fetchWeather: (city: string) => Promise<void>
+ * }}
  */
 export const useWeather = () => {
   // local state

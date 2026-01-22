@@ -6,23 +6,43 @@ import PropTypes from "prop-types";
 import WeatherIcon from "./WeatherIcon";
 
 /**
- * Renders a card with detailed weather information for a specific location.
+ * Tarjeta de Clima (WeatherCard).
  *
- * @param {{data: object}} props - The props for the component.
- * @param {object} props.data - The weather data object to display.
- * @param {string} props.data.name - The name of the city.
- * @param {number} props.data.tempC - The temperature in Celsius.
- * @param {string} props.data.condition - A description of the weather condition.
- * @param {string|number} props.data.windKph - The wind speed in km/h.
- * @param {string|number} props.data.humidity - The humidity percentage.
- * @param {string} props.data.iconCode - The icon code for the weather condition.
- * @param {string} props.data.localtime - The local time and date string.
- * @returns {JSX.Element|null} The rendered weather card component or null if no data is provided.
+ * **Funcionalidad:**
+ * - Presenta la información climática detallada (temperatura, viento, humedad, etc.).
+ * - Implementa el diseño visual principal de la respuesta.
+ *
+ * **Flujo de interacción:**
+ * - Es un componente de presentación puro (Stateless).
+ * - Recibe datos vía props y los renderiza si existen.
+ *
+ * **Estado y efectos secundarios:**
+ * - Stateless.
+ * - Renderiza condicionalmente el icono y subcomponentes.
+ *
+ * **Motivo de existencia:**
+ * - Separación de presentación y lógica.
+ * - Encapsula el diseño complejo de la tarjeta.
+ *
+ * @param {{
+ *   data: {
+ *     name: string,
+ *     tempC: number,
+ *     condition: string,
+ *     windKph: number|string,
+ *     humidity: number|string,
+ *     iconCode: string,
+ *     localtime: string,
+ *     feelsLikeC: number
+ *   }
+ * }} props
+ * @returns {JSX.Element|null}
  */
 const WeatherCard = ({ data }) => {
   if (!data) return null;
 
-  const { name, tempC, condition, windKph, humidity, iconCode, localtime } = data;
+  const { name, tempC, condition, windKph, humidity, iconCode, localtime } =
+    data;
 
   return (
     <article

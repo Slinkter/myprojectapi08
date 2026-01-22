@@ -8,11 +8,28 @@ import PropTypes from "prop-types";
 import { FaSpinner } from "react-icons/fa";
 
 /**
- * Search Component
- * Manages its own input state and triggers a search event via a callback.
+ * Componente de Búsqueda (Search).
  *
- * @param {{ onSearch: (city: string) => void, loading: boolean }} props - Component props.
- * @returns {JSX.Element} The rendered Search component.
+ * **Funcionalidad:**
+ * - Provee una interfaz para que el usuario ingrese el nombre de una ciudad.
+ * - Gestiona su estado interno de formulario.
+ * - Comunica la búsqueda al componente padre.
+ *
+ * **Flujo de interacción:**
+ * 1. El usuario escribe en el input (estado local `city`).
+ * 2. Al hacer submit, valida que no esté vacío.
+ * 3. Ejecuta `onSearch` pasando la ciudad limpia.
+ *
+ * **Estado y efectos secundarios:**
+ * - `city` (string): Estado local del input.
+ * - No tiene efectos secundarios.
+ *
+ * **Motivo de existencia:**
+ * - Reutilizable: Puede usarse en cualquier parte que requiera input de ciudad.
+ * - Aísla la lógica de formularios de la lógica de negocio.
+ *
+ * @param {{ onSearch: (city: string) => void, loading: boolean }} props
+ * @returns {JSX.Element}
  */
 const Search = ({ onSearch, loading }) => {
   const [city, setCity] = useState("");
