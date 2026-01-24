@@ -3,53 +3,14 @@ import PropTypes from "prop-types";
 import WeatherIcon from "./WeatherIcon";
 
 /**
-<<<<<<< HEAD
- * Tarjeta de Clima (WeatherCard).
- *
- * **Funcionalidad:**
- * - Presenta la información climática detallada (temperatura, viento, humedad, etc.).
- * - Implementa el diseño visual principal de la respuesta.
- *
- * **Flujo de interacción:**
- * - Es un componente de presentación puro (Stateless).
- * - Recibe datos vía props y los renderiza si existen.
- *
- * **Estado y efectos secundarios:**
- * - Stateless.
- * - Renderiza condicionalmente el icono y subcomponentes.
- *
- * **Motivo de existencia:**
- * - Separación de presentación y lógica.
- * - Encapsula el diseño complejo de la tarjeta.
- *
- * @param {{
- *   data: {
- *     name: string,
- *     tempC: number,
- *     condition: string,
- *     windKph: number|string,
- *     humidity: number|string,
- *     iconCode: string,
- *     localtime: string,
- *     feelsLikeC: number
- *   }
- * }} props
- * @returns {JSX.Element|null}
-=======
  * Renders a card with detailed weather information for a specific location.
  * Wrapped in React.memo to prevent unnecessary re-renders (rerender-memo).
->>>>>>> skill01
  */
 const WeatherCard = memo(({ data }) => {
     if (!data) return null;
 
-<<<<<<< HEAD
-  const { name, tempC, condition, windKph, humidity, iconCode, localtime } =
-    data;
-=======
     const { name, tempC, condition, windKph, humidity, iconCode, localtime } =
         data;
->>>>>>> skill01
 
     return (
         <article
