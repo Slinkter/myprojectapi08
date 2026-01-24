@@ -1,33 +1,22 @@
-/**
- * @file WeatherIcon.jsx
- * @description A component that maps OpenWeatherMap icon codes to specific icons from the 'react-icons/wi' library.
- */
+import { memo } from "react";
 import PropTypes from "prop-types";
 import {
-  WiDaySunny,
-  WiNightClear,
-  WiDayCloudy,
-  WiNightAltCloudy,
-  WiCloud,
-  WiCloudy,
-  WiShowers,
-  WiRain,
-  WiThunderstorm,
-  WiSnow,
-  WiFog,
-  WiNa,
+    WiDaySunny,
+    WiNightClear,
+    WiDayCloudy,
+    WiNightAltCloudy,
+    WiCloud,
+    WiCloudy,
+    WiShowers,
+    WiRain,
+    WiThunderstorm,
+    WiSnow,
+    WiFog,
+    WiNa,
 } from "react-icons/wi";
 
-/**
- * Maps an OpenWeatherMap icon code to a corresponding weather icon component.
- *
- * @param {{ iconCode: string, className: string }} props - Component props.
- * @param {string} props.iconCode - The icon code from the OpenWeatherMap API (e.g., "01d", "10n").
- * @param {string} props.className - Additional CSS classes to apply to the icon.
- * @returns {JSX.Element} The rendered icon component.
- */
-const WeatherIcon = ({ iconCode, className = "" }) => {
-  const iconMap = {
+// Applying 'rendering-hoist-jsx' and 'js-index-maps' - Hoist static map outside component
+const ICON_MAP = {
     "01d": WiDaySunny,
     "01n": WiNightClear,
     "02d": WiDayCloudy,
@@ -46,16 +35,22 @@ const WeatherIcon = ({ iconCode, className = "" }) => {
     "13n": WiSnow,
     "50d": WiFog,
     "50n": WiFog,
-  };
-
-  const IconComponent = iconMap[iconCode] || WiNa;
-
-  return <IconComponent className={className} />;
 };
 
+/**
+ * Maps an OpenWeatherMap icon code to a corresponding weather icon component.
+ * Wrapped in memo for 'rerender-memo' optimization.
+ */
+const WeatherIcon = memo(({ iconCode, className = "" }) => {
+    const IconComponent = ICON_MAP[iconCode] || WiNa;
+    return <IconComponent className={className} />;
+});
+
+WeatherIcon.displayName = "WeatherIcon";
+
 WeatherIcon.propTypes = {
-  iconCode: PropTypes.string.isRequired,
-  className: PropTypes.string,
+    iconCode: PropTypes.string.isRequired,
+    className: PropTypes.string,
 };
 
 export default WeatherIcon;
