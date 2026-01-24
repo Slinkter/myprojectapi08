@@ -5,21 +5,28 @@
 @tailwind utilities;
 
 body {
-  font-family: "Inter", sans-serif;
-  @apply bg-gray-50 text-gray-900;
+    font-family: "Inter", sans-serif;
+    @apply bg-gray-50 text-gray-900;
 }
 
 @keyframes fade-in {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .animate-fade-in {
-  animation: fade-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: fade-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Vercel Best Practice: rendering-content-visibility */
+/* Optimizes rendering performance for list items */
+.forecast-card {
+    content-visibility: auto;
+    contain-intrinsic-size: 0 128px; /* Estimated height */
 }

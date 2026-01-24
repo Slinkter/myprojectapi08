@@ -1,4 +1,4 @@
-import { useState, memo } from "react";
+import { useState, memo, useRef, useCallback } from "react";
 import PropTypes from "prop-types";
 import { FaSpinner } from "react-icons/fa";
 
@@ -9,6 +9,8 @@ import { FaSpinner } from "react-icons/fa";
  * - Provee una interfaz para que el usuario ingrese el nombre de una ciudad.
  * - Gestiona su estado interno de formulario.
  * - Comunica la búsqueda al componente padre.
+ * - Muestra feedback visual durante transiciones (isPending).
+ * - Usa event handler refs para callbacks estables (advanced pattern).
  *
  * **Flujo de interacción:**
  * 1. El usuario escribe en el input (estado local `city`).
@@ -23,22 +25,33 @@ import { FaSpinner } from "react-icons/fa";
  * - Reutilizable: Puede usarse en cualquier parte que requiera input de ciudad.
  * - Aísla la lógica de formularios de la lógica de negocio.
  *
- * @param {{ onSearch: (city: string) => void, loading: boolean }} props
+ * @param {{ onSearch: (city: string) => void, loading: boolean, isPending: boolean }} props
  * @returns {JSX.Element}
  */
-const Search = memo(({ onSearch, loading }) => {
+const Search = memo(({ onSearch, loading, isPending = false }) => {
     const [city, setCity] = useState("");
 
-    const handleSubmit = (e) => {
+    // Advanced pattern: event handler refs for stable callbacks
+    const handleSubmitRef = useRef();
+
+    // Store the latest version of the handler
+    handleSubmitRef.current = (e) => {
         e.preventDefault();
         if (city.trim()) {
             onSearch(city);
         }
     };
 
+    // Stable callback that never changes
+    const handleSubmit = useCallback((e) => {
+        handleSubmitRef.current?.(e);
+    }, []);
+
     return (
         <form
-            className="w-full flex flex-col md:flex-row gap-4 items-stretch"
+            className={`w-full flex flex-col md:flex-row gap-4 items-stretch transition-opacity duration-200 ${
+                isPending ? "opacity-70" : ""
+            }`}
             onSubmit={handleSubmit}
             aria-label="City search form"
         >
@@ -56,6 +69,7 @@ const Search = memo(({ onSearch, loading }) => {
                     value={city}
                     onChange={(e) => setCity(e.target.value)}
                     aria-label="City name"
+                    disabled={loading}
                 />
                 <div className="absolute bottom-0 left-0 w-full h-0.5 bg-gray-900 scale-x-0 transition-transform origin-left peer-focus:scale-x-100"></div>
             </div>
@@ -84,6 +98,7 @@ Search.displayName = "Search";
 Search.propTypes = {
     onSearch: PropTypes.func.isRequired,
     loading: PropTypes.bool.isRequired,
+    isPending: PropTypes.bool,
 };
 
 export default Search;

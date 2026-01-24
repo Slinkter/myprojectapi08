@@ -1,60 +1,55 @@
+import useSWR from "swr";
+import { useState } from "react";
+import { fetchForecastData } from "../services/weatherService";
+import { toForecastDomainModel } from "../mappers/forecastMapper";
+
 /**
  * Hook Personalizado: Gestión del Pronóstico Extendido (useForecast).
  *
  * **Funcionalidad:**
  * - Gestiona el estado y la obtención de datos para el pronóstico de 5 días.
+ * - Migrado a SWR para caché automático y deduplicación.
  *
  * **Flujo de interacción:**
  * 1. Expone `fetchForecast(city)`.
- * 2. Llama al servicio `fetchForecastData`.
+ * 2. SWR maneja automáticamente caché, revalidación y estados.
  * 3. Transforma datos con `toForecastDomainModel`.
- * 4. Actualiza estado.
  *
  * **Estado y efectos secundarios:**
- * - States: `forecastData` (Array), `isLoading`, `error`.
+ * - SWR maneja: `data`, `error`, `isValidating`.
+ * - Caché de 60 segundos para evitar requests redundantes.
  *
  * **Motivo de existencia:**
  * - Feature Isolation: Separa la lógica del forecast de la del clima actual.
+ * - Consistencia: Mismo patrón que useWeather.
  *
  * @returns {{
  *   forecastData: Array<object>|null,
  *   isLoading: boolean,
  *   error: string|null,
- *   fetchForecast: (city: string) => Promise<void>
+ *   fetchForecast: (city: string) => void
  * }}
  */
-import { useState, useCallback } from "react";
-import { fetchForecastData } from "../services/weatherService";
-import { toForecastDomainModel } from "../mappers/forecastMapper";
-
 export const useForecast = () => {
-  const [forecastData, setForecastData] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
+    const [city, setCity] = useState("Lima");
 
-  const fetchForecast = useCallback(async (city) => {
-    if (!city || !city.trim()) {
-      setForecastData(null);
-      setError(null);
-      return;
-    }
+    const { data, error, isValidating } = useSWR(
+        city ? `forecast-${city}` : null,
+        async () => {
+            const rawData = await fetchForecastData(city);
+            return toForecastDomainModel(rawData);
+        },
+        {
+            revalidateOnFocus: false,
+            shouldRetryOnError: false,
+            dedupingInterval: 60000, // Cache for 1 minute
+        },
+    );
 
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const rawData = await fetchForecastData(city);
-      const domainData = toForecastDomainModel(rawData);
-      setForecastData(domainData);
-    } catch (err) {
-      console.error("Error fetching forecast:", err);
-      // No mostramos error en UI para forecast si falla, o podemos mostrar un mensaje discreto.
-      // Estandarizamos mensaje.
-      setError("No forecast available.");
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  return { forecastData, isLoading, error, fetchForecast };
+    return {
+        forecastData: data || null,
+        isLoading: isValidating && !data,
+        error: error ? "No forecast available." : null,
+        fetchForecast: setCity,
+    };
 };

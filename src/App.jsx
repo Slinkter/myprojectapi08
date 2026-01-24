@@ -1,4 +1,4 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useTransition } from "react";
 import Search from "@/features/weather/components/Search";
 import { useWeather } from "@/features/weather/hooks/useWeather";
 
@@ -13,23 +13,30 @@ const WeatherCardSkeleton = lazy(
 /**
  * Main App Component.
  * Optimized following Vercel React Best Practices.
+ * Implements useTransition for non-blocking search interactions.
  */
 const App = () => {
     // Custom hook encapsulates all data fetching and state logic
     const { weatherData, isLoading, error, fetchWeather } = useWeather();
 
+    // useTransition for non-blocking UI updates during searches
+    const [isPending, startTransition] = useTransition();
+
     /**
      * Handles the search action triggered by the Search component.
+     * Uses startTransition to keep UI responsive during data fetching.
      * @param {string} city - The city to search for.
      */
     const handleSearch = (city) => {
-        fetchWeather(city);
+        startTransition(() => {
+            fetchWeather(city);
+        });
     };
 
     return (
         <div className="min-h-screen flex flex-col items-center justify-center p-6 transition-colors duration-300">
             <main className="w-full max-w-lg space-y-8 animate-fade-in">
-                <header className="text-center space-y-2 mb-8">
+                <header className="hidden text-center space-y-2 mb-8">
                     <h1 className="text-3xl font-light tracking-tight text-gray-900">
                         Weather<span className="font-semibold">Forecast</span>
                     </h1>
@@ -39,7 +46,11 @@ const App = () => {
                 </header>
 
                 <section>
-                    <Search onSearch={handleSearch} loading={isLoading} />
+                    <Search
+                        onSearch={handleSearch}
+                        loading={isLoading}
+                        isPending={isPending}
+                    />
                 </section>
 
                 <section aria-live="polite" className="min-h-[300px]">
