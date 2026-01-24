@@ -70,6 +70,21 @@ For detailed information, see [Performance Optimizations Documentation](./src/do
 
     _You can get a free API key from [OpenWeatherMap](https://openweathermap.org/api)._
 
+    > ⚠️ **Security Notice for Client-Side Applications:**  
+    > In client-side applications (like this React app), API keys are **visible in the browser's Network tab**. This is expected behavior and **not a security flaw** for demo/portfolio projects.
+    >
+    > **For this project:**
+    >
+    > - ✅ Uses OpenWeatherMap's free tier with rate limits
+    > - ✅ No sensitive data or billing enabled
+    > - ✅ Suitable for demos and development
+    >
+    > **For production apps with sensitive APIs:**
+    >
+    > - Consider implementing a backend proxy (see `api/weather.js`)
+    > - Deploy to Vercel/Netlify with serverless functions
+    > - See [Security Documentation](./src/docs/SEGURIDAD.md) for details
+
 4.  **Run the development server:**
     ```bash
     pnpm run dev
