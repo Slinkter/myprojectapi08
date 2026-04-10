@@ -37,8 +37,9 @@ const Search = memo(({ onSearch, loading, isPending = false }) => {
     // Store the latest version of the handler
     handleSubmitRef.current = (e) => {
         e.preventDefault();
-        if (city.trim()) {
-            onSearch(city);
+        const sanitizedCity = city.trim();
+        if (sanitizedCity) {
+            onSearch(sanitizedCity);
         }
     };
 

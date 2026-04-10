@@ -1,5 +1,4 @@
 import useSWR from "swr";
-import { useState } from "react";
 import { fetchForecastData } from "../services/weatherService";
 import { toForecastDomainModel } from "../mappers/forecastMapper";
 
@@ -11,7 +10,7 @@ import { toForecastDomainModel } from "../mappers/forecastMapper";
  * - Migrado a SWR para caché automático y deduplicación.
  *
  * **Flujo de interacción:**
- * 1. Expone `fetchForecast(city)`.
+ * 1. Expone `forecastData`, `isLoading`, `error`.
  * 2. SWR maneja automáticamente caché, revalidación y estados.
  * 3. Transforma datos con `toForecastDomainModel`.
  *
@@ -23,33 +22,31 @@ import { toForecastDomainModel } from "../mappers/forecastMapper";
  * - Feature Isolation: Separa la lógica del forecast de la del clima actual.
  * - Consistencia: Mismo patrón que useWeather.
  *
+ * @param {string} city - The city to fetch forecast for.
  * @returns {{
  *   forecastData: Array<object>|null,
  *   isLoading: boolean,
- *   error: string|null,
- *   fetchForecast: (city: string) => void
+ *   error: string|null
  * }}
  */
-export const useForecast = () => {
-    const [city, setCity] = useState("Lima");
-
+export const useForecast = (city) => {
     const { data, error, isValidating } = useSWR(
-        city ? `forecast-${city}` : null,
-        async () => {
-            const rawData = await fetchForecastData(city);
+        city ? ["forecast", city] : null,
+        async ([, cityName], { signal } = {}) => {
+            const rawData = await fetchForecastData(cityName, signal);
             return toForecastDomainModel(rawData);
         },
         {
             revalidateOnFocus: false,
             shouldRetryOnError: false,
             dedupingInterval: 60000, // Cache for 1 minute
+            keepPreviousData: true,
         },
     );
 
     return {
         forecastData: data || null,
         isLoading: isValidating && !data,
-        error: error ? "No forecast available." : null,
-        fetchForecast: setCity,
+        error: error ? error.message : null,
     };
 };

@@ -1,4 +1,16 @@
 /**
+ * @typedef {Object} WeatherDomainModel
+ * @property {string} name - City name.
+ * @property {number} tempC - Current temperature in Celsius.
+ * @property {number} feelsLikeC - Apparent temperature in Celsius.
+ * @property {string} condition - Description of current weather.
+ * @property {string} windKph - Wind speed in km/h.
+ * @property {number} humidity - Relative humidity percentage.
+ * @property {string} iconCode - OpenWeather icon identifier.
+ * @property {string} localtime - Formatted local date string.
+ */
+
+/**
  * Mapeador de Dominio de Clima (Weather Mapper).
  *
  * **Funcionalidad:**
@@ -20,15 +32,14 @@
  * - Centraliza la lógica de transformación de datos.
  *
  * @param {object} apiData - Objeto de respuesta raw de la API.
- * @returns {object|null} Objeto de dominio limpio o null si no hay datos.
+ * @returns {WeatherDomainModel|null} Objeto de dominio limpio o null si no hay datos.
  */
-import { config } from "@/config/env";
 import { WEATHER_CONSTANTS } from "../constants";
 
 export const toWeatherDomainModel = (apiData) => {
   if (!apiData) return null;
 
-  const { UNITS, DATE_FORMAT } = WEATHER_CONSTANTS;
+  const { UNITS, DATE_FORMAT, LOCALE } = WEATHER_CONSTANTS;
 
   return {
     name: apiData.name,
@@ -39,9 +50,9 @@ export const toWeatherDomainModel = (apiData) => {
     windKph: (apiData.wind.speed * UNITS.WIND_CONVERSION_FACTOR).toFixed(1),
     humidity: apiData.main.humidity,
     iconCode: apiData.weather[0].icon,
-    // Formateo de fecha usando configuración local
-    localtime: new Date(apiData.dt * 1000).toLocaleDateString(
-      config.app.language,
+    // Formateo de fecha usando configuración local centralizada
+    localtime: new Date(apiData.dt * UNITS.SECONDS_TO_MS).toLocaleDateString(
+      LOCALE.DEFAULT,
       DATE_FORMAT,
     ),
   };

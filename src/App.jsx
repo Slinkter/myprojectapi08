@@ -1,6 +1,7 @@
-import { lazy, Suspense, useTransition } from "react";
+import { useState, useCallback, lazy, Suspense, useTransition } from "react";
 import Search from "@/features/weather/components/Search";
 import { useWeather } from "@/features/weather/hooks/useWeather";
+import { useForecast } from "@/features/weather/hooks/useForecast";
 
 // Applying 'bundle-dynamic-imports' pattern
 const WeatherCard = lazy(
@@ -9,6 +10,9 @@ const WeatherCard = lazy(
 const WeatherCardSkeleton = lazy(
     () => import("@/features/weather/components/WeatherCardSkeleton"),
 );
+const ForecastDisplay = lazy(
+    () => import("@/features/weather/components/ForecastDisplay"),
+);
 
 /**
  * Main App Component.
@@ -16,8 +20,15 @@ const WeatherCardSkeleton = lazy(
  * Implements useTransition for non-blocking search interactions.
  */
 const App = () => {
-    // Custom hook encapsulates all data fetching and state logic
-    const { weatherData, isLoading, error, fetchWeather } = useWeather();
+    // Phase 1: Lifted city state for synchronization
+    const [currentCity, setCurrentCity] = useState("Lima");
+
+    // Custom hooks for data fetching
+    const { weatherData, isLoading: isWeatherLoading, error: weatherError } = useWeather(currentCity);
+    const { forecastData, isLoading: isForecastLoading, error: forecastError } = useForecast(currentCity);
+
+    const isLoading = isWeatherLoading || isForecastLoading;
+    const error = weatherError || forecastError;
 
     // useTransition for non-blocking UI updates during searches
     const [isPending, startTransition] = useTransition();
@@ -27,11 +38,12 @@ const App = () => {
      * Uses startTransition to keep UI responsive during data fetching.
      * @param {string} city - The city to search for.
      */
-    const handleSearch = (city) => {
+    const handleSearch = useCallback((city) => {
+        if (city === currentCity) return;
         startTransition(() => {
-            fetchWeather(city);
+            setCurrentCity(city);
         });
-    };
+    }, [currentCity]);
 
     return (
         <div className="min-h-screen flex flex-col items-center justify-center p-6 transition-colors duration-300">
@@ -53,7 +65,7 @@ const App = () => {
                     />
                 </section>
 
-                <section aria-live="polite" className="min-h-[300px]">
+                <section aria-live="polite" className="min-h-[300px] space-y-8">
                     <Suspense fallback={<WeatherCardSkeleton />}>
                         {isLoading ? (
                             <WeatherCardSkeleton />
@@ -63,7 +75,12 @@ const App = () => {
                                 <p>{error}</p>
                             </div>
                         ) : weatherData ? (
-                            <WeatherCard data={weatherData} />
+                            <div className={`transition-all duration-300 ${isPending ? "opacity-60 grayscale-[20%]" : "opacity-100"}`}>
+                                <WeatherCard data={weatherData} />
+                                {forecastData && (
+                                    <ForecastDisplay data={forecastData} isLoading={isForecastLoading} />
+                                )}
+                            </div>
                         ) : (
                             <div className="text-center p-6 text-gray-400 text-sm">
                                 Enter a city to see the forecast.

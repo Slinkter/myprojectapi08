@@ -1,24 +1,24 @@
 import useSWR from "swr";
-import { useState } from "react";
 import { fetchWeatherData } from "../services/weatherService";
 import { toWeatherDomainModel } from "../mappers/weatherMapper";
+import { WEATHER_CONSTANTS } from "../constants";
 
 /**
  * Custom hook to fetch and manage weather data using SWR.
  * Follows 'client-swr-dedup' best practice for automatic caching and deduplication.
+ * @param {string} city - The city to fetch weather for.
  */
-export const useWeather = () => {
-    const [city, setCity] = useState("Lima");
-
+export const useWeather = (city) => {
     const { data, error, isValidating } = useSWR(
-        city ? city : null,
-        async (cityName) => {
-            const rawData = await fetchWeatherData(cityName);
+        city ? ["weather", city] : null,
+        async ([, cityName], { signal } = {}) => {
+            const rawData = await fetchWeatherData(cityName, signal);
             return toWeatherDomainModel(rawData);
         },
         {
             revalidateOnFocus: false,
             shouldRetryOnError: false,
+            keepPreviousData: true,
         },
     );
 
@@ -27,9 +27,8 @@ export const useWeather = () => {
         isLoading: isValidating && !data,
         error: error
             ? error.message.includes("401") || error.message.includes("API key")
-                ? "Invalid or missing API Key. Please check your .env file."
-                : "Unable to load data. Please check the city name."
+                ? WEATHER_CONSTANTS.MESSAGES.AUTH_ERROR
+                : error.message // Mostramos el error real de la API si no es de auth
             : null,
-        fetchWeather: setCity,
     };
 };

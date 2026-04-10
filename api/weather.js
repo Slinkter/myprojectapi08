@@ -1,6 +1,7 @@
 // api/weather.js - Vercel Serverless Function
 // Este archivo iría en la raíz del proyecto en una carpeta /api
 
+/* global process */
 export default async function handler(req, res) {
     // Habilitar CORS
     res.setHeader("Access-Control-Allow-Origin", "*");

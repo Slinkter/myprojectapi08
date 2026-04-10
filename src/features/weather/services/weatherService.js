@@ -31,28 +31,30 @@ import { config } from "@/config/env";
  * Fetches current weather data for a specific city.
  *
  * @param {string} city - City name.
+ * @param {AbortSignal} [signal] - Optional AbortSignal for request cancellation.
  * @returns {Promise<object>} Raw weather data.
  */
-export const fetchWeatherData = async (city) => {
+export const fetchWeatherData = async (city, signal) => {
   const { baseUrl, weatherKey } = config.api;
   validateConfig(weatherKey);
 
   const url = `${baseUrl}/weather?q=${encodeURIComponent(city)}&appid=${weatherKey}`;
-  return await performFetch(url);
+  return await performFetch(url, signal);
 };
 
 /**
  * Fetches 5-day forecast data with 3-hour step.
  *
  * @param {string} city - City name.
+ * @param {AbortSignal} [signal] - Optional AbortSignal for request cancellation.
  * @returns {Promise<object>} Raw forecast data.
  */
-export const fetchForecastData = async (city) => {
+export const fetchForecastData = async (city, signal) => {
   const { baseUrl, weatherKey } = config.api;
   validateConfig(weatherKey);
 
   const url = `${baseUrl}/forecast?q=${encodeURIComponent(city)}&appid=${weatherKey}`;
-  return await performFetch(url);
+  return await performFetch(url, signal);
 };
 
 // --- Private Helpers ---
@@ -61,8 +63,8 @@ const validateConfig = (key) => {
   if (!key) throw new Error("Configuration Error: API Key is missing.");
 };
 
-const performFetch = async (url) => {
-  const response = await fetch(url);
+const performFetch = async (url, signal) => {
+  const response = await fetch(url, { signal });
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
     throw new Error(errorData.message || "Failed to fetch data");
